@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Title Goes Here</title>
+    <script src="vendor/angular/angular.min.js"></script>
+    <script src="vendor/angular-route/angular-route.min.js"></script>
+    <script src="vendor/jquery/dist/jquery.min.js"></script>
+    <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+    <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="views/styles.css">
+    <base href="/">
+    <script>
+
+    </script>
+</head>
+<body ng-controller="IndexController">
+    <div class="container-fluid row mainWrapper">
+        <div class="col-sm-1 leftMenu">
+            --Test Message--
+            <div ng-repeat="btn in leftMenuBtns track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>
+        </div>
+        <main class="col-sm-8">
+            <div class="row contentWrapper">
+                <div>
+                    <div class="sc-player-wrapper">
+                        <div ng-cloak id="sc-player-div" class="sc-player">
+                            <p class="lead">{{curSong.id}}</p>
+                        </div>
+                    </div>
+                    <form ng-submit="searchSong(newSong)"><input type="text" ng-model="newSong"></form>
+                    <a href="/">Home</a>
+                    <ng-view></ng-view>
+                </div>
+            </div>
+        </main>
+        <aside class="col-sm-3 rightSidebar">
+            <p class="lead">Song History</p>
+            <div class="songInHistory" ng-repeat="song in history">{{song.id}}</div>
+        </aside>
+    </div>
+    <script src="assets/scripts/appConfig.js"></script>
+    <script src="assets/scripts/app.min.js"></script>
+</body>
+</html>

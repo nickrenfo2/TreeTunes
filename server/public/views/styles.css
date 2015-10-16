@@ -1,0 +1,34 @@
+.leftMenu, .rightSidebar {
+    background-color:#034500;
+    color:white;
+    font-size:16px;
+    /*border-right:3px solid #5AAC56;*/
+}
+
+.leftMenu {
+    border-right: 3px solid #5AAC56;
+}
+.rightSidebar {
+    border-left: 3px solid #5AAC56;
+}
+
+.leftMenuBtn i {
+    padding:5px;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.sc-player {
+    width:100%;
+    height:75px;
+    /*background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 69%,rgba(0,0,0,0) 100%);*/
+    color:white;
+}
+
+.sc-player-wrapper {
+    background-color:#156711;
+    box-shadow: 0 5px 20px black;
+    margin-bottom: 20px;
+}
