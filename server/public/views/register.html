@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>kjhkjh</title>
+    <!--<script src="vendor/jquery/dist/jquery.min.js"></script>-->
+    <!--<script src="assets/scripts/testregister.js"></script>-->
+</head>
+<body>
+<form action="/register" method="post" name="form">
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username"/>
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password"/>
+    </div>
+    <div>
+        <label for="role">Role:</label>
+        <!--<input type="" name="role" id="role"/>-->
+        <select name="role" id="role">
+            <option value="listener" selected>Listener</option>
+            <option value="dj">DJ</option>
+            <option value="host">Host</option>
+        </select>
+    </div>
+    <div>
+        <input type="submit" value="Register"/>
+    </div>
+</form>
+</body>
+</html>

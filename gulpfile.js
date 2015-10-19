@@ -61,7 +61,8 @@ gulp.task('copy',function() {
         'bootstrap/dist/js/bootstrap.min.js',
         'jquery/dist/jquery.min.js',
         'jquery/dist/jquery.min.map',
-        'angular-route/angular-route.min.js'
+        'angular-route/angular-route.min.js',
+        'angular-animate/angular-animate.min.js'
     ],{cwd:'node_modules',base:'node_modules'})
         .pipe(gulp.dest('server/public/vendor'));
 });

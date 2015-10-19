@@ -1,10 +1,10 @@
 /// <reference path="./tsDefs.d.ts"/>
 
-var app = angular.module('myApp',[]);
+var app = angular.module('myApp',['ngAnimate']);
 
-app.controller('HomeController', ['$scope', function ($scope){
-    $scope.itworks = 'Hello World';
-}]);
+//app.controller('HomeController', ['$scope', function ($scope){
+//    $scope.itworks = 'Hello World';
+//}]);
 
 
 //app.config(function($routeProvider,$locationProvider){

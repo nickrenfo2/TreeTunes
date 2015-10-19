@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title>Title Goes Here</title>
     <script src="vendor/angular/angular.min.js"></script>
-    <script src="vendor/angular-route/angular-route.min.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular-animate.js"></script>-->
+    <!--<script src="vendor/angular-route/angular-route.min.js"></script>-->
     <script src="vendor/jquery/dist/jquery.min.js"></script>
+    <script src="vendor/angular-animate/angular-animate.min.js"></script>
     <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
     <script src="https://w.soundcloud.com/player/api.js"></script>
@@ -20,7 +22,6 @@
 <body ng-controller="IndexController">
     <div class="container-fluid row mainWrapper">
         <div class="col-sm-1 leftMenu">
-            --Test Message--
             <div ng-repeat="btn in leftMenuBtns track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>
         </div>
         <main class="col-sm-8">
@@ -32,8 +33,24 @@
                         </div>
                     </div>
                     <form ng-submit="searchSong(newSong)"><input type="text" ng-model="newSong"></form>
-                    <a href="/">Home</a>
-                    <ng-view></ng-view>
+                    <!--<a href="/">Home</a>-->
+                    <!--<ng-view></ng-view>-->
+                    <!--<form action="/login" method="post">-->
+                    <!--<form ng-submit="login()">-->
+                        <!--<div>-->
+                            <!--<label for="username">Username:</label>-->
+                            <!--<input type="text" name="username" id="username" ng-model="acct.username"/>-->
+                        <!--</div>-->
+                        <!--<div>-->
+                            <!--<label for="password">Password:</label>-->
+                            <!--<input type="password" name="password" id="password" ng-model="acct.password"/>-->
+                        <!--</div>-->
+                        <!--<div>-->
+                            <!--<input type="submit" value="Log In"/>-->
+                            <!--&lt;!&ndash;<a href="/register">Register</a>&ndash;&gt;-->
+                            <span ng-click="loggingIn = true" class="btn btn-success login-btn">Register/Login</span>
+                        <!--</div>-->
+                    <!--</form>-->
                 </div>
             </div>
         </main>
@@ -42,7 +59,45 @@
             <div class="songInHistory" ng-repeat="song in history">{{song.id}}</div>
         </aside>
     </div>
-    <script src="assets/scripts/appConfig.js"></script>
+
+    <div ng-show="loggingIn" class="loginDiv" ng-cloak>
+        <!--<form action="/register" method="post" name="form">-->
+        <i class="fa fa-times fa-3x closeRegister clickable" ng-click="loggingIn = false"></i>
+        <form name="register" class="registerForm">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" ng-model="acct.username"/>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" ng-model="acct.password"/>
+            </div>
+            <div>
+                <label for="role">Role:</label>
+                <!--<input type="" name="role" id="role"/>-->
+                <select name="role" id="role" ng-model="acct.role">
+                    <option value="listener" selected>Listener</option>
+                    <option value="dj">DJ</option>
+                    <option value="host">Host</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn btn-success login-btn" ng-click="login()">Log In</button>
+                <input type="submit" value="Register" class="btn btn-success register-btn" ng-click="registerAcct()"/>
+            </div>
+        </form>
+        <ul ng-hide="acct.upper && acct.lower && acct.num && acct.special && length">
+            <p style="margin-top:10px;">Password must contain...</p>
+            <li ng-hide="acct.upper">Uppercase character</li>
+            <li ng-hide="acct.lower">Lowercase character</li>
+            <li ng-hide="acct.special">Special character</li>
+            <li ng-hide="acct.num">Number</li>
+            <li ng-hide="acct.length">At least 8 characters</li>
+        </ul>
+    </div>
+
+    <div class="alert alert-{{alert.status}}" ng-show="alert.status" ng-cloak>{{alert.message}}</div>
+    <!--<script src="assets/scripts/appConfig.js"></script>-->
     <script src="assets/scripts/app.min.js"></script>
 </body>
 </html>

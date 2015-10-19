@@ -1,3 +1,4 @@
+
 .leftMenu, .rightSidebar {
     background-color:#034500;
     color:white;
@@ -31,4 +32,61 @@
     background-color:#156711;
     box-shadow: 0 5px 20px black;
     margin-bottom: 20px;
+}
+
+
+form label {
+    width: 75px;
+}
+
+
+.alert {
+    position:fixed;
+    top:10%;
+    min-height:50px;
+    left:33%;
+    width:33%;
+}
+
+.btn-success {
+    border:1px solid #156711;
+}
+
+.login-btn {
+    width:100px;
+}
+
+.register-btn {
+    width:100px;
+    margin-left:50px;
+}
+
+.closeRegister {
+    float:right;
+    position: relative;
+    top: -25px;
+    left: 10px;
+}
+
+.loginDiv {
+    background-color:#5AAC56;
+    border-radius:20px;
+    height:350px;
+    width:33%;
+    box-shadow:0 10px 30px black;
+    position: fixed;
+    left: 33%;
+    top: 25%;
+    padding:30px;
+
+}
+
+.loginDiv {
+    /*-webkit-transition:all easeInSine 0.3s;*/
+    transition:all ease-in 0.3s;
+}
+
+.loginDiv.ng-hide {
+    /*opacity:0;*/
+    top:105%;
 }
