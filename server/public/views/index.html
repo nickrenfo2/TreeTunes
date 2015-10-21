@@ -8,57 +8,73 @@
     <!--<script src="vendor/angular-route/angular-route.min.js"></script>-->
     <script src="vendor/jquery/dist/jquery.min.js"></script>
     <script src="vendor/angular-animate/angular-animate.min.js"></script>
+    <script src="vendor/angular-cookies/angular-cookies.min.js"></script>
     <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/vendor/socket.io-client/socket.io.js"></script>
     <script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
     <script src="https://w.soundcloud.com/player/api.js"></script>
     <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="views/styles.css">
     <base href="/">
-    <script>
-
-    </script>
 </head>
 <body ng-controller="IndexController">
     <div class="container-fluid row mainWrapper">
         <div class="col-sm-1 leftMenu">
-            <div ng-repeat="btn in leftMenuBtns track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>
+            <div class="logo">Logo Here</div>
+            <div ng-cloak ng-repeat="btn in leftMenuBtns track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>
         </div>
         <main class="col-sm-8">
             <div class="row contentWrapper">
-                <div>
-                    <div class="sc-player-wrapper">
-                        <div ng-cloak id="sc-player-div" class="sc-player">
-                            <p class="lead">{{curSong.id}}</p>
+                <div ng-controller="PlayerController as player">
+                    <div class="player-wrapper">
+                        <div ng-cloak class="player">
+                            <p class="lead" ng-cloak>{{curSong.id}}</p>
+                        </div>
+                        <div class="songProgressWrapper">
+                            <div class="songProgress" ng-style="songProgressStyle">
+                                <!--<span>{{Math.floor(songProgress/60)+":"+("0"+songProgress%60).substring(0,2)}}<div></div></span>-->
+                            </div>
+                            <span class="songDur">{{Math.floor(Math.floor(curSong.duration/1000)/60)+":"+Math.floor(curSong.duration/1000)%60}}</span>
                         </div>
                     </div>
-                    <form ng-submit="searchSong(newSong)"><input type="text" ng-model="newSong"></form>
-                    <!--<a href="/">Home</a>-->
-                    <!--<ng-view></ng-view>-->
-                    <!--<form action="/login" method="post">-->
-                    <!--<form ng-submit="login()">-->
-                        <!--<div>-->
-                            <!--<label for="username">Username:</label>-->
-                            <!--<input type="text" name="username" id="username" ng-model="acct.username"/>-->
-                        <!--</div>-->
-                        <!--<div>-->
-                            <!--<label for="password">Password:</label>-->
-                            <!--<input type="password" name="password" id="password" ng-model="acct.password"/>-->
-                        <!--</div>-->
-                        <!--<div>-->
-                            <!--<input type="submit" value="Log In"/>-->
-                            <!--&lt;!&ndash;<a href="/register">Register</a>&ndash;&gt;-->
-                            <span ng-click="loggingIn = true" class="btn btn-success login-btn">Register/Login</span>
-                        <!--</div>-->
-                    <!--</form>-->
+                    <form ng-submit="searchSound(newSong)"><input type="text" ng-model="newSong"></form>
+                        <!--<span ng-click="loggingIn = true" class="btn btn-success login-btn">Register/Login</span>-->
+                    <div class="SCResults">
+                        <div class="SCResult" ng-repeat="track in SCResults">
+                            <div class="SCResultImg"><img src="{{track.artwork_url}}"></div>
+                            <div class="SCResultInfo clickable" ng-click="playSound(track)">{{track.title}}<br/>{{formatTime(track.duration)}}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
         <aside class="col-sm-3 rightSidebar">
-            <p class="lead">Song History</p>
-            <div class="songInHistory" ng-repeat="song in history">{{song.id}}</div>
+            <!-- THE BELOW COMMENT IS FOR THE SONG HISTORY BUTTON -->
+
+                <!--<i class="fa fa-history" ng-click="toggleHistory()"></i>-->
+                <!--<i class="fa fa-at"></i>-->
+            <!--<div class="historyWrapper" ng-class="{expanded:historyOpen}">-->
+                <!--<div class="history" ng-repeat="song in history">{{song.id}}</div>-->
+            <!--</div>-->
+
+            <div class="chatbox" ng-controller="ChatboxController as chatbox">
+                <ul id="messages">
+                    <li ng-repeat="msg in messageHistory track by $index" class="msg">
+                        <span class="usr">{{msg.user}}</span>
+                        <p ng-repeat="message in msg.messages">{{message}}</p>
+                    </li>
+                </ul>
+                <form ng-submit="sendChat()">
+                    <input id="m" autocomplete="off" ng-model="chatMsg"/>
+                    <!--<button>Send</button>-->
+                </form>
+            </div>
+
         </aside>
     </div>
+
+    <!--OUTSIDE MAIN CONTENT AREA-->
 
     <div ng-show="loggingIn" class="loginDiv" ng-cloak>
         <!--<form action="/register" method="post" name="form">-->

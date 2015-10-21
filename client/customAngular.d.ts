@@ -26,11 +26,21 @@ interface ICustomScope extends ng.IScope {
     itworks:String,
     leftMenuBtns: ILeftMenuBtn[],
     newSong:String,
-    searchSong:Function,
+    searchSound:Function,
     curSong:Object,
     history:Object[],
+    toggleHistory:Function,
     loggingIn:Boolean,
     registerAcct:Function,
     alert:IAlertObj,
-    acct:IAcct
+    acct:IAcct,
+    historyOpen:Boolean,
+    songProgressStyle: Object,
+    songProgress:Number,
+    Math:Math,
+    login:Function,
+    SCResults:Array,
+    sendChat:Function,
+    chatMsg:String,
+    messageHistory:[String]
 }

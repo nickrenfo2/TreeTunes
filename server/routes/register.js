@@ -26,12 +26,6 @@ router.post('/', function(req,res,next) {
         if (err)
             next(err);
         else
-            //res.redirect('/users');
-        //req.login(user, function(err) {
-        //    if (err) { return next(err); }
-        //    //return res.send({ success : true, message : 'authentication succeeded' });
-        //    return res.send('Account created');
-        //});
         login(req,res,next);
         //res.send('Account created');
     });

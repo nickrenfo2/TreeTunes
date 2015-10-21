@@ -1,6 +1,12 @@
 /// <reference path="./tsDefs.d.ts"/>
 
-var app = angular.module('myApp',['ngAnimate']);
+var app = angular.module('myApp',['ngAnimate','ngCookies']);
+
+
+
+
+
+
 
 //app.controller('HomeController', ['$scope', function ($scope){
 //    $scope.itworks = 'Hello World';

@@ -2,7 +2,7 @@
  * Created by Nick on 10/13/15.
  */
 ///<reference path='../tsDefs.d.ts'/>
-app.controller("IndexController", ["$scope", "$http",'$sce', function ($scope: ICustomScope, $http: ng.IHttpService,$sce){
+app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scope: ICustomScope, $http: ng.IHttpService,$cookies){
     $scope.itworks = "Hello World!";
     $scope.leftMenuBtns =[];
     //var widget = SC.Widget('sc-player-iframe');
@@ -19,6 +19,17 @@ app.controller("IndexController", ["$scope", "$http",'$sce', function ($scope: I
     $scope.acct.lower = /[a-z]+/.test(pass);
     $scope.acct.num = /[0-9]+/.test(pass);
     $scope.acct.special = /[!@#$%^(){}[\]~\-_]+/.test(pass);
+    $scope.historyOpen = false;
+    $scope.songProgressStyle = {};
+    $scope.songProgress=0;
+    var songProgressInterval;
+    $scope.Math = Math;
+    $scope.SCResults = [];
+    $scope.messageHistory = [];
+    var socket;
+    var ioConnString = 'http://localhost:5000';
+    var lastMsgUser = '';
+
 
     var gPlayer;
     SC.initialize({
@@ -26,33 +37,39 @@ app.controller("IndexController", ["$scope", "$http",'$sce', function ($scope: I
         redirect_uri: 'http://treesradio.net/soundcloud/callback.html'
     });
     //console.log('getting tracks');
-    $scope.searchSong = function(songname) {
-        console.log('Searching for song:',songname);
-        SC.get('/tracks/'+songname).then(function (track) {
-            //console.log(track);
-            $scope.curSong = track;
-            console.log($scope.curSong);
-            $scope.history.push(track);
+    $scope.searchSound = function(query) {
+        console.log('Searching for song:',query);
+        SC.get('/tracks/',{
+            q:query
+        }).then(function (tracks) {
+            console.log(tracks);
+            $scope.SCResults = tracks;
             $scope.$apply();
-            SC.stream('/tracks/' + track.id).then(function (player) {
-                gPlayer = player;
-                gPlayer.play();
-            });
         });
+
     };
 
     //MJ - 6521918
     //NewNew - 20788160
 
 
+
+    $scope.toggleHistory = function(){
+        //console.log('toggling history');
+        $scope.historyOpen = !$scope.historyOpen;
+    };
+
     $scope.login = function(){
         console.log('logging in');
         $http.post('/login',$scope.acct).then(function(resp){
-            //console.log(resp);
+            console.log(resp.data);
             $scope.loggingIn = false;
             if (resp.data.success){
                 setAlert('Thank you for logging in','success');
                 getMenuBtns();
+                socket = io().connect(ioConnString,{
+                    query:'session_id='+$cookies.get('user')
+                });
             }
         });
 
@@ -71,7 +88,7 @@ app.controller("IndexController", ["$scope", "$http",'$sce', function ($scope: I
             }
         },function(resp){
             if (resp.status == 401) {
-                $scope.leftMenuBtns = [{icon:"sign-in",title:"Log In",action:$scope.login}];
+                $scope.leftMenuBtns = [{icon:"sign-in",title:"Log In",action:function(){$scope.loggingIn = true}}];
             }
         });
 
@@ -122,11 +139,75 @@ app.controller("IndexController", ["$scope", "$http",'$sce', function ($scope: I
     }
 
 
+    $scope.playSound =  function(track){
+        //SC.get('/tracks/'+id).then(function (track) {
+        //console.log(track);
+        console.log('playsound:',track.id);
+        SC.stream('/tracks/' + track.id).then(function (player) {
+            $scope.songProgressStyle = {transition:"all linear 1s",width:"10px"};
+            $scope.curSong = track;
+            console.log($scope.curSong);
+            $scope.history.push(track);
+            clearInterval(songProgressInterval);
+            gPlayer = player;
+            gPlayer.play();
+            setTimeout(function(){
+                $scope.songProgressStyle = {transition:"all linear "+track.duration+"ms",width:"100%"};
+            },1000);
+            songProgressInterval = setInterval(function(){
+                $scope.songProgress++;
+                $scope.$apply();
+            },1000)
+        });
+        //});
+    };
+
+    $scope.formatTime = function(time){
+        return Math.floor(Math.floor(time/1000)/60)+":"+("0"+time%60).substring(0,2);
+    };
+
+    //$scope.searchSong($scope.newSong);
+
+    //console.log('user cookie');
+    //$cookies.put('test','testcookie');
+    //console.log($cookies.getAll());
     //every time the user types in the login/register password box, it will run checkpass to update the password requirement booleans
     $scope.$watch('acct.password',function(){
         checkPass();
     });
     getMenuBtns();
+
+    //SOCKETS STUFF BELOW
+
+    if($cookies.get('user')){
+        socket = io().connect(ioConnString,{
+            query:'session_id='+$cookies.get('user')
+        });
+
+        socket.on('chat',function(msg){
+
+            var hist = $scope.messageHistory;
+            if (lastMsgUser == msg.user){
+                var histLen = hist.length;
+                hist[histLen-1].messages.push(msg.msg);
+            } else {
+                lastMsgUser = msg.user;
+                hist.push({user:msg.user,messages:[msg.msg]});
+            }
+
+            console.log(hist);
+
+            //$scope.messageHistory.push(msg);
+            //$scope.apply();
+        });
+    }
+    $scope.sendChat = function(){
+        socket.emit('chat',$scope.chatMsg);
+        $scope.chatMsg = '';
+        return false;
+    };
+
+
+
+
 }]);
-
-

@@ -13,6 +13,7 @@ $(function() {
         $('.mainWrapper').height($(window).height())
         $('.leftMenu').height($('.mainWrapper').height());
         $('.rightSidebar').height($('.mainWrapper').height());
+        $('.chatbox').height($('.rightSidebar').height());
     }
 });
 //console.log('running SC');

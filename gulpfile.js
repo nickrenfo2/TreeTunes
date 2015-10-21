@@ -9,29 +9,23 @@ var ts = require('gulp-typescript');
 var sourcemaps = require('gulp-sourcemaps');
 var order = require('gulp-order');
 
-gulp.task('uglify', function() {
-    return gulp.src('client/*.js')
-        .pipe(uglify())
-        .pipe(rename({
-            extname: '.min.js'
-        }))
-        .pipe(gulp.dest('server/public/assets/scripts/'));
-});
+//gulp.task('uglify', function() {
+//    return gulp.src('client/*.js')
+//        .pipe(uglify())
+//        .pipe(rename({
+//            extname: '.min.js'
+//        }))
+//        .pipe(gulp.dest('server/public/assets/scripts/'));
+//});
 
-gulp.task('rename',function() {
-    return gulp.src("./server/public/assets/scripts/app.js")
-        .pipe(rename("public/assets/scripts/app.min.js"))
-        .pipe(gulp.dest("./server"));
-});
-
-gulp.task('minify', function(){
-    return gulp.src(['client/*.js'])
-        .pipe(concat('concat.js'))
-        //.pipe(gulp.dest('client/minified'))
-        .pipe(rename('app.min.js'))
-        .pipe(uglify())
-        .pipe(gulp.dest('server/public/assets/scripts/'));
-});
+//gulp.task('minify', function(){
+//    return gulp.src(['client/*.js'])
+//        .pipe(concat('concat.js'))
+//        //.pipe(gulp.dest('client/minified'))
+//        .pipe(rename('app.min.js'))
+//        .pipe(uglify())
+//        .pipe(gulp.dest('server/public/assets/scripts/'));
+//});
 
 gulp.task('compTS', function () {
     var tsResult = gulp.src(['client/*.ts','client/controllers/*.ts'])
@@ -62,7 +56,9 @@ gulp.task('copy',function() {
         'jquery/dist/jquery.min.js',
         'jquery/dist/jquery.min.map',
         'angular-route/angular-route.min.js',
-        'angular-animate/angular-animate.min.js'
+        'angular-animate/angular-animate.min.js',
+        'socket.io-client/socket.io.js',
+        'angular-cookies/angular-cookies.min.js'
     ],{cwd:'node_modules',base:'node_modules'})
         .pipe(gulp.dest('server/public/vendor'));
 });
