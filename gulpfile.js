@@ -58,7 +58,8 @@ gulp.task('copy',function() {
         'angular-route/angular-route.min.js',
         'angular-animate/angular-animate.min.js',
         'socket.io-client/socket.io.js',
-        'angular-cookies/angular-cookies.min.js'
+        'angular-cookies/angular-cookies.min.js',
+        'angularjs-scroll-glue/src/scrollglue.js'
     ],{cwd:'node_modules',base:'node_modules'})
         .pipe(gulp.dest('server/public/vendor'));
 });

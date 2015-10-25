@@ -6,7 +6,8 @@ var MenuBtnSchema = new Schema({
     icon:String,
     action:String,
     title:String,
-    role:[String]
+    role:[String],
+    area:String
 });
 
 var btn = mongoose.model('MenuBtn',MenuBtnSchema);

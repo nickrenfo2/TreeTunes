@@ -3,7 +3,8 @@
 interface ILeftMenuBtn {
     icon:String,
     action:any,
-    title:String
+    title:String,
+    area:String
 }
 
 interface IAlertObj {
@@ -42,5 +43,6 @@ interface ICustomScope extends ng.IScope {
     SCResults:Array,
     sendChat:Function,
     chatMsg:String,
-    messageHistory:[String]
+    messageHistory:[String],
+    loggedIn:any
 }

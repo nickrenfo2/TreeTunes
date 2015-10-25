@@ -1,6 +1,6 @@
 /// <reference path="./tsDefs.d.ts"/>
 
-var app = angular.module('myApp',['ngAnimate','ngCookies']);
+var app = angular.module('myApp',['ngAnimate','ngCookies','luegg.directives']);
 
 
 

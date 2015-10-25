@@ -2,11 +2,11 @@
  * Created by Nick on 10/13/15.
  */
 ///<reference path='../tsDefs.d.ts'/>
-app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scope: ICustomScope, $http: ng.IHttpService,$cookies){
-    $scope.itworks = "Hello World!";
-    $scope.leftMenuBtns =[];
+app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scope, $http: ng.IHttpService,$cookies){
+    $scope.itworks = "Hello!";
+    $scope.menuBtns =[];
     //var widget = SC.Widget('sc-player-iframe');
-    $scope.newSong = 'kid-cudi-dat-new-new-dirty';
+    $scope.newSong = 'kid-cudi';
     $scope.curSong = {
         id:"No Song Playing"
     };
@@ -20,12 +20,20 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     $scope.acct.num = /[0-9]+/.test(pass);
     $scope.acct.special = /[!@#$%^(){}[\]~\-_]+/.test(pass);
     $scope.historyOpen = false;
+    $scope.searchOpen = false;
     $scope.songProgressStyle = {};
     $scope.songProgress=0;
     var songProgressInterval;
     $scope.Math = Math;
     $scope.SCResults = [];
-    $scope.messageHistory = [];
+    //$scope.messageHistory = [];
+    $scope.loggedIn = !!$cookies.get('user');
+    if ($scope.loggedIn){
+        $scope.chatplaceholder = '';
+    } else {
+        $scope.chatplaceholder = 'Please log in to chat';
+    }
+    $scope.songQueue = [];
     var socket;
     var ioConnString = 'http://localhost:5000';
     var lastMsgUser = '';
@@ -40,7 +48,8 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     $scope.searchSound = function(query) {
         console.log('Searching for song:',query);
         SC.get('/tracks/',{
-            q:query
+            q:query,
+            streamable:true
         }).then(function (tracks) {
             console.log(tracks);
             $scope.SCResults = tracks;
@@ -62,36 +71,44 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     $scope.login = function(){
         console.log('logging in');
         $http.post('/login',$scope.acct).then(function(resp){
-            console.log(resp.data);
-            $scope.loggingIn = false;
+            //console.log(resp.data);
             if (resp.data.success){
+                $scope.loggingIn = false;
                 setAlert('Thank you for logging in','success');
                 getMenuBtns();
-                socket = io().connect(ioConnString,{
-                    query:'session_id='+$cookies.get('user')
-                });
+                //connectToChat();
+                $scope.loggedIn = true;
+                $scope.chatplaceholder = '';
             }
         });
 
     };
 
+    $scope.logout = function(){
+        $http.get('/logout').then(function(){
+            $cookies.remove('user');
+        });
+        getMenuBtns();
+        //console.log('log out');
+    };
+
     //Loads the menu buttons from the database. At present, there are only left menu buttons.
     function getMenuBtns(){
-        $scope.leftMenuBtns = [];
+        $scope.menuBtns = [];
         $http.get('/menuBtns').then(function(resp){
             //console.log(resp.data);
             for (var i=0;i< <any>resp.data.length;i++){
-                $scope.leftMenuBtns.push(resp.data[i]);
-                var thisBtn = $scope.leftMenuBtns[i];
+                $scope.menuBtns.push(resp.data[i]);
+                var thisBtn = $scope.menuBtns[i];
                 var action = thisBtn.action;
-                thisBtn.action = new Function(action);
+                thisBtn.action = function(){eval(action)};
             }
         },function(resp){
             if (resp.status == 401) {
-                $scope.leftMenuBtns = [{icon:"sign-in",title:"Log In",action:function(){$scope.loggingIn = true}}];
+                $scope.loggedIn = false;
+                $scope.menuBtns = [{icon:"sign-in",title:"Log In",action:function(){$scope.loggingIn = true},area:'left'}];
             }
         });
-
     }
 
     //if pass meets requirements, will submit the account to the server to register
@@ -138,24 +155,29 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         return $scope.acct.upper && $scope.acct.lower && $scope.acct.num && $scope.acct.special && $scope.acct.length;
     }
 
-
-    $scope.playSound =  function(track){
+    //given a Track object and optionally a time (in MS) to seek to,
+    $scope.playSound =  function(track,time){
+        if (!time)time = 0;
         //SC.get('/tracks/'+id).then(function (track) {
         //console.log(track);
         console.log('playsound:',track.id);
+        console.log('current time:',time);
+        $scope.songProgressStyle = {transition:"all linear 1s",width:"10px"};
         SC.stream('/tracks/' + track.id).then(function (player) {
-            $scope.songProgressStyle = {transition:"all linear 1s",width:"10px"};
             $scope.curSong = track;
             console.log($scope.curSong);
             $scope.history.push(track);
             clearInterval(songProgressInterval);
             gPlayer = player;
+            console.log(gPlayer);
+            gPlayer.seek(time);
             gPlayer.play();
             setTimeout(function(){
                 $scope.songProgressStyle = {transition:"all linear "+track.duration+"ms",width:"100%"};
+                $scope.$apply();
             },1000);
             songProgressInterval = setInterval(function(){
-                $scope.songProgress++;
+                //$scope.songProgress++;
                 $scope.$apply();
             },1000)
         });
@@ -166,6 +188,47 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         return Math.floor(Math.floor(time/1000)/60)+":"+("0"+time%60).substring(0,2);
     };
 
+    $scope.queueAdd = function(track){
+        console.log('adding track:',track);
+        $http.post('/queue/add',track);
+    };
+
+    $scope.getQueue = function(){
+        $http.get('/queue').then(function(resp){
+            console.log('upcoming queue:');
+            console.log(resp.data);
+            $scope.songQueue = resp.data;
+        });
+    };
+
+    $scope.kickoff = function(){
+        $http.get('/queue/kickoff');
+    };
+
+    function advanceSong(){
+        console.log('advancing');
+        $http.get('/queue/next').then(function (resp){
+            console.log(resp.data);
+            SC.get('/tracks/'+resp.data.id).then(function(track){
+                $scope.playSound(track,resp.data.curTime);
+            });
+        });
+    }
+
+    $scope.advanceSong = function(){
+        advanceSong();
+    };
+
+    function checkSong(){
+        console.log('checking song');
+        $http.get('/queue/next').then(function(resp){
+            if (resp.data.id != $scope.curSong.id){
+                advanceSong();
+            }
+        });
+    }
+
+    $scope.start = function(){setInterval(checkSong,5000)};
     //$scope.searchSong($scope.newSong);
 
     //console.log('user cookie');
@@ -180,33 +243,10 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     //SOCKETS STUFF BELOW
 
     if($cookies.get('user')){
-        socket = io().connect(ioConnString,{
-            query:'session_id='+$cookies.get('user')
-        });
-
-        socket.on('chat',function(msg){
-
-            var hist = $scope.messageHistory;
-            if (lastMsgUser == msg.user){
-                var histLen = hist.length;
-                hist[histLen-1].messages.push(msg.msg);
-            } else {
-                lastMsgUser = msg.user;
-                hist.push({user:msg.user,messages:[msg.msg]});
-            }
-
-            console.log(hist);
-
-            //$scope.messageHistory.push(msg);
-            //$scope.apply();
-        });
+        //connectToChat();
     }
-    $scope.sendChat = function(){
-        socket.emit('chat',$scope.chatMsg);
-        $scope.chatMsg = '';
-        return false;
-    };
 
+    //function connectToChat(){
 
 
 

@@ -18,10 +18,9 @@ var passportSocketIo = require('passport.socketio');
 
 
 var login = require('./routes/loginFn');
-
 var userRoute = require('./routes/users');
-
 var register = require('./routes/register');
+var queue = require('./routes/queue');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
@@ -32,11 +31,12 @@ app.use(express.static(path.join(__dirname,"/public")));
 //app.use('/soundcloud',soundCloud);
 
 
-//var btn = new MenuBtn();
-//btn.action = 'console.log("Button1")';
-//btn.icon = 'chrome';
-//btn.title = 'Button 1';
-//btn.role = ['listener'];
+var btn = new MenuBtn();
+btn.action = '$scope.searchOpen = !$scope.searchOpen';
+btn.icon = 'search';
+btn.title = '';
+btn.role = ['listener','dj','admin'];
+btn.area = 'left';
 //var btn2 = new MenuBtn();
 //btn2.action = 'alert("Button2")';
 //btn2.icon = 'certificate';
@@ -48,8 +48,8 @@ app.use(express.static(path.join(__dirname,"/public")));
 
 
 //switch between local and remote DB
-var connString = 'mongodb://localhost/treeTunes';
-//var connString = 'mongodb://testAdmin:PoopyPants@ds039504.mongolab.com:39504/treetunes';
+//var connString = 'mongodb://localhost/treeTunes';
+var connString = 'mongodb://testAdmin:PoopyPants@ds039504.mongolab.com:39504/treetunes';
 mongoose.connect(connString);
 
 
@@ -115,6 +115,7 @@ passport.deserializeUser(function(id, done) {
 //Route files here
 app.use('/register', register);
 app.use('/users',userRoute);
+app.use('/queue',queue);
 //ALL ROUTING BELOW
 
 app.get('/', function (req, res) {
@@ -130,6 +131,13 @@ app.get('/', function (req, res) {
 //);
 app.post('/login', function(req, res, next) {
     login(req,res,next);
+});
+
+app.get('/logout', function (req,res) {
+    console.log('logging out:',req.user.username);
+    req.logout();
+    //res.sendFile(path.join(__dirname,'/public/views/logout.html'));
+    res.sendStatus(200);
 });
 
 app.get('/menuBtns', function (req,res) {
