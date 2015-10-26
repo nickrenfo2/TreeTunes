@@ -6,7 +6,7 @@ $(function() {
     resizeMain();
     $(window).resize(function(){
         resizeMain();
-    })
+    });
     var $cont = $('#messageContainer');
     $cont[0].scrollTop = $cont[0].scrollHeight;
 
@@ -18,13 +18,18 @@ $(function() {
         }
     }).focus();
 
-    //resizes the Main element and the leftMenu to be 100% height
+    //resizes the elements that need 100% height
     function resizeMain(){
         $('.mainWrapper').height($(window).height())
+        $('main').height($('.mainWrapper').height());
+        $('.contentWrapper').height($('main').height());
         $('.leftMenu').height($('.mainWrapper').height());
         $('.rightSidebar').height($('.mainWrapper').height());
         $('.chatbox').height($('.rightSidebar').height());
         $('#messageContainer').height($('.chatbox').height()-$('.chatbox').children('form').height());
+        $('.SCResults').height($('.contentWrapper').height()-85);
+        $('.management').height($('.contentWrapper').height()-85);
+        $('.usergrp').height($('.management').height());
     }
 });
 //console.log('running SC');

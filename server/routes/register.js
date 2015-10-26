@@ -22,6 +22,7 @@ router.post('/', function(req,res,next) {
     var special = /[!@#$%^(){}[\]~\-_:]+/.test(pass);
 
     if (upper && lower && num && special)
+    req.body.role = 'listener';
     Users.create(req.body, function (err, post) {
         if (err)
             next(err);
@@ -29,9 +30,6 @@ router.post('/', function(req,res,next) {
         login(req,res,next);
         //res.send('Account created');
     });
-    else {
-        res.send('Account creation failed')
-    }
 });
 
 module.exports = router;

@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <title>Title Goes Here</title>
     <script src="vendor/angular/angular.min.js"></script>
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular-animate.js"></script>-->
-    <!--<script src="vendor/angular-route/angular-route.min.js"></script>-->
     <script src="vendor/jquery/dist/jquery.min.js"></script>
     <script src="vendor/angular-animate/angular-animate.min.js"></script>
     <script src="vendor/angular-cookies/angular-cookies.min.js"></script>
@@ -22,7 +20,7 @@
 </head>
 <body ng-controller="IndexController">
     <div class="container-fluid row mainWrapper">
-        <div class="col-sm-1 leftMenu">
+        <div class="col-sm-2 leftMenu">
             <div class="logo">{{itworks}}</div>
             <div ng-cloak class="leftMenuBtn clickable" ng-click="logout()" ng-show="loggedIn"><i class="fa fa-sign-out"></i>Log Out</div>
             <div ng-cloak ng-repeat="btn in menuBtns |filter: {area:'left'} track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>
@@ -33,10 +31,10 @@
                 </div>
             </div>
         </div>
-        <main class="col-sm-8">
+        <main class="col-sm-7">
             <div class="row contentWrapper">
-                <div ng-controller="PlayerController as player">
-                <!--<div>-->
+                <!--<div ng-controller="PlayerController as player">-->
+                <div>
                     <div class="player-wrapper">
                         <div ng-cloak class="player">
                             <i ng-repeat="btn in menuBtns |filter: {area:'top'} track by $index" class="fa fa-{{btn.icon}} clickable" ng-click="btn.action()"></i>
@@ -53,12 +51,14 @@
                         </div>
                     </div>
 
-                    <div class="btn btn-info" ng-click="advanceSong()">Advance Song</div>
-                    <div class="btn btn-info" ng-click="getQueue()">Get Queue</div>
-                    <div class="btn btn-info" ng-click="kickoff()">Kick off queue</div>
-                    <div class="btn btn-info" ng-click="start()">Start</div>
+                    <div class="devBtns" ng-show="showDev" ng-class="{expanded:showDev}">
+                        <div class="btn btn-info" ng-click="advanceSong()">Advance Song</div>
+                        <div class="btn btn-info" ng-click="getQueue()">Get Queue</div>
+                        <div class="btn btn-info" ng-click="kickoff()">Kick off queue</div>
+                        <div class="btn btn-info" ng-click="start()">Start</div>
+                    </div>
 
-                    <div class="SCResults" ng-class="{expanded:searchOpen}">
+                    <div class="SCResults" ng-class="{expanded:searchOpen}" ng-show="searchOpen">
                         <div class="SCResult search">
                             <form ng-submit="searchSound(newSong)"><input type="text" ng-model="newSong" placeholder="Search Soundcloud"></form>
                         </div>
@@ -71,6 +71,20 @@
                                 <span class="resDur">{{formatTime(track.duration)}}</span>
                             </div>
                             <!--ng-click="playSound(track)"-->
+                        </div>
+                    </div>
+                    <div ng-controller="ManagementController as mgmt" ng-class="{expanded:mgmtOpen}" class="row management" ng-cloak ng-show="mgmtOpen">
+                        <div ng-repeat="role in mgmt.roles" class="usergrp {{role}}grp">
+                            <div class="rolename">{{role | uppercase}}</div>
+                            <div ng-repeat="usr in mgmt.users | filter: {role:role}" class="user {{role}}">
+                                <i class="fa fa-chevron-circle-right" ng-click="changeRank(usr)"></i>
+                                <form class="rankForm" ng-class="{expanded:usr.changeRank}">
+                                    <select ng-model="usr.role" ng-change="mgmt.changeRole(usr)">
+                                        <option ng-repeat="role in mgmt.roles" value="{{role}}">{{role}}</option>
+                                    </select>
+                                </form>
+                                <div>{{usr.username}}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -87,7 +101,7 @@
 
             <div class="chatbox" ng-controller="ChatboxController as chatbox">
             <!--<div class="chatbox">-->
-                <div class="btn btn-info connBtn" ng-click="chatbox.connect()">Connect</div>
+                <div class="btn btn-info connBtn" ng-click="chatbox.connect()" ng-hide="chatbox.socket.connected">Connect</div>
                 <div id="messageContainer" scroll-glue>
                     <ul id="messages">
                         <li ng-repeat="msg in chatbox.history track by $index" class="msg">
@@ -120,13 +134,14 @@
                 <input type="password" name="password" id="password" ng-model="acct.password"/>
             </div>
             <div>
-                <label for="role">Role:</label>
+                <!--<label for="role">Role:</label>-->
                 <!--<input type="" name="role" id="role"/>-->
-                <select name="role" id="role" ng-model="acct.role">
-                    <option value="listener" selected>Listener</option>
-                    <option value="dj">DJ</option>
-                    <option value="host">Host</option>
-                </select>
+                <!--<select name="role" id="role" ng-model="acct.role">-->
+                    <!--<option value="listener" selected>Listener</option>-->
+                    <!--<option value="dj">DJ</option>-->
+                    <!--<option value="host">Host</option>-->
+                    <!--<option value="admin">Admin</option>-->
+                <!--</select>-->
             </div>
             <div>
                 <button class="btn btn-success login-btn" ng-click="login()">Log In</button>

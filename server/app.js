@@ -32,10 +32,10 @@ app.use(express.static(path.join(__dirname,"/public")));
 
 
 var btn = new MenuBtn();
-btn.action = '$scope.searchOpen = !$scope.searchOpen';
-btn.icon = 'search';
-btn.title = '';
-btn.role = ['listener','dj','admin'];
+btn.action = '$scope.mgmtOpen = !$scope.mgmtOpen';
+btn.icon = 'gears';
+btn.title = 'Management';
+btn.role = ['host','admin'];
 btn.area = 'left';
 //var btn2 = new MenuBtn();
 //btn2.action = 'alert("Button2")';
@@ -45,6 +45,18 @@ btn.area = 'left';
 //
 //btn.save();
 //btn2.save();
+
+//unbase = 'testing';
+//pwbase = 'Test.me';
+//
+//for (var i=0;i<20;i++){
+//    var usr = new User();
+//    usr.username = unbase + i;
+//    usr.password = pwbase + i;
+//    usr.role = 'listener';
+//    usr.save();
+//}
+
 
 
 //switch between local and remote DB
@@ -58,7 +70,7 @@ app.use(session({
     key: 'user',
     resave: true,
     saveUninitialized: false,
-    cookie: { maxAge: 600000, secure: false, httpOnly:false },
+    cookie: { maxAge: null, secure: false, httpOnly:false },
     store:new MongoStore({mongooseConnection:mongoose.connection})
 }));
 
@@ -123,9 +135,30 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname,'./public/views/index.html'));
 });
 
-//app.post('/',
+//app.get('/users/all', function (req,res) {
+//    if(!req.isAuthenticated()){
+//        res.sendStatus(401);
+//    } else if (req.user.role !='admin' && req.user.role != 'host'){
+//        res.sendStatus(401);
+//    } else {
+//        User.find({},'username role', function (err,users) {
+//            //var safeUsers = [];
+//            //for (var i=0;i<usrs.length;i++){
+//            //    safeUsers.push({username:usrs[i].username,role:usrs[i].role})
+//            //}
+//            //res.json(safeUsers);
+//            res.json(users);
+//        });
+//    }
+//
+//    function cleanUser(usr){
+//        return {username:usr.username,role:user.role}
+//    }
+//});
+
+//app.post('/login',
 //    passport.authenticate('local', {
-//        successRedirect: '/',
+//        successRedirect: 'back',
 //        failureRedirect: '/'
 //    })
 //);

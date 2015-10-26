@@ -81,14 +81,16 @@ function advance(){
     var duration = 5000;
     curTime = 0;
     Song.findOne({}, function (err,rmSong) {
-        console.log(rmSong);
+        //console.log(rmSong);
         if(rmSong) {
             rmSong.remove();
             Song.findOne({}, function (err, song) {
-                //duration = song.duration;
-                console.log(duration);
-                socket.emit('advance');
-                setTimeout(advance, duration + 5000);
+                if (song) {
+                    duration = song.duration;
+                    console.log(duration);
+                    //socket.emit('advance');
+                    setTimeout(advance, duration + 5000);
+                }
             });
         }
     });
@@ -100,19 +102,12 @@ function changeTrack(duration) {
     myVar = setTimeout(changeTrack, duration);
 }
 
-//function changeTrack() {
-//
-//}
-//
-//var myVar;
-//
-//function myFunction() {
-//    myVar = setTimeout(alertFunc, 3000);
-//}
-//
-//function alertFunc() {
-//    // get new track and duration
-//    // send new url to router
-//}
+
+//Start up the server immediately
+advance();
+setInterval(function(){
+    curTime+=delay;
+    //console.log(curTime);
+},delay);
 
 module.exports = router;

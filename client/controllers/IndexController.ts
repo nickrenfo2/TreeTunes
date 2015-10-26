@@ -21,6 +21,8 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     $scope.acct.special = /[!@#$%^(){}[\]~\-_]+/.test(pass);
     $scope.historyOpen = false;
     $scope.searchOpen = false;
+    $scope.mgmtOpen = false;
+    $scope.showDev = false;
     $scope.songProgressStyle = {};
     $scope.songProgress=0;
     var songProgressInterval;
@@ -87,8 +89,8 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     $scope.logout = function(){
         $http.get('/logout').then(function(){
             $cookies.remove('user');
+            getMenuBtns();
         });
-        getMenuBtns();
         //console.log('log out');
     };
 
@@ -98,10 +100,7 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         $http.get('/menuBtns').then(function(resp){
             //console.log(resp.data);
             for (var i=0;i< <any>resp.data.length;i++){
-                $scope.menuBtns.push(resp.data[i]);
-                var thisBtn = $scope.menuBtns[i];
-                var action = thisBtn.action;
-                thisBtn.action = function(){eval(action)};
+                $scope.menuBtns.push(new MenuBtn(resp.data[i]));
             }
         },function(resp){
             if (resp.status == 401) {
@@ -109,6 +108,8 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
                 $scope.menuBtns = [{icon:"sign-in",title:"Log In",action:function(){$scope.loggingIn = true},area:'left'}];
             }
         });
+        //console.log('menu btns:');
+        //console.log($scope.menuBtns);
     }
 
     //if pass meets requirements, will submit the account to the server to register
@@ -175,7 +176,7 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
             setTimeout(function(){
                 $scope.songProgressStyle = {transition:"all linear "+track.duration+"ms",width:"100%"};
                 $scope.$apply();
-            },1000);
+            },3000);
             songProgressInterval = setInterval(function(){
                 //$scope.songProgress++;
                 $scope.$apply();
@@ -228,7 +229,7 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         });
     }
 
-    $scope.start = function(){setInterval(checkSong,5000)};
+    $scope.start = function(){};
     //$scope.searchSong($scope.newSong);
 
     //console.log('user cookie');
@@ -238,16 +239,31 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     $scope.$watch('acct.password',function(){
         checkPass();
     });
+
+    $scope.changeRank = function(usr){
+        if (!usr.changeRank){
+            usr.changeRank = true;
+        } else {
+            usr.changeRank = false;
+        }
+    };
+
     getMenuBtns();
+    $scope.getQueue();
+    setInterval(checkSong,1000);
+    advanceSong();
 
-    //SOCKETS STUFF BELOW
 
-    if($cookies.get('user')){
-        //connectToChat();
+
+
+    function MenuBtn(btn){
+        //console.log('new btn:');
+        this.icon = btn.icon;
+        this.title = btn.title;
+        var action = btn.action;
+        //console.log(action);
+        this.action = function(){eval(action)};
+        //console.log(this);
+        this.area = btn.area;
     }
-
-    //function connectToChat(){
-
-
-
 }]);

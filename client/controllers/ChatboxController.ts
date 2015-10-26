@@ -1,11 +1,10 @@
 /**
  * Created by Nick on 10/21/15.
  */
-app.controller('ChatboxController',Chatbox);
+app.controller('ChatboxController',['$scope',Chatbox]);
 
-
-function Chatbox() {
-    console.log('chatboxcontroller');
+function Chatbox($scope) {
+    var cb = this;
     this.history = [];
     this.placeholder = 'Please log in to chat';
     this.botName = 'BBot';
@@ -17,6 +16,7 @@ function Chatbox() {
         //return $cookies.get('user');
         return readCookie('user');
     };
+    this.scope = $scope;
     function readCookie(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
@@ -28,59 +28,106 @@ function Chatbox() {
         return null;
     }
 
-    if(this.getUser()){
-        console.log('logged in');
-        this.connect();
-    }
+
+    $scope.$watch('loggedIn',function(newVal){
+        //If newVal is true, the user is logged in and should connect to chat
+        if (newVal) cb.connect();
+    });
+
+    this.connect = function(){
+        var hist = this.history;
+        var botName = this.botName;
+        this.socket = io().connect(this.ioConnString,{
+            query:'session_id='+this.getUser(),
+            timeout:3600000
+        });
+
+        this.socket.on('chat',function(msg){
+            console.log('chattin');
+            pushMessage(msg.user,msg.msg);
+
+
+            //$scope.messageHistory.push(msg);
+            //$scope.apply();
+        });
+        this.socket.on('conn',function(usr){
+            //this.lastMsgUser = '';
+            console.log('connected user:',usr);
+            var message = usr + " has joined.";
+            //var message =  "someone has joined.";
+            pushMessage(botName,message);
+        });
+        this.socket.on('dc',function(usr){
+            var message = usr+' has left.';
+            pushMessage(botName,message);
+        });
+        this.socket.on('advance',function(){
+            console.log('advance recieved');
+            //this.$parent.advanceSong();
+        });
+
+        function pushMessage(usr,msg){
+            if (cb.lastMsgUsr == usr){
+                var histLen = hist.length;
+                hist[histLen-1].messages.push(msg);
+            } else {
+                cb.lastMsgUsr = usr;
+                hist.push({user:usr,messages:[msg]});
+            }
+            $scope.$apply();
+        }
+    };
+
+    //if(this.getUser()){
+    //    console.log('logged in');
+    //    this.connect();
+    //}
 }
 
-Chatbox.prototype.test = function(){
-    console.log('something');
-    console.log(this.history);
-};
+//Chatbox.prototype.connect = function(){
+//    var cb = this;
+//    var hist = this.history;
+//    var botName = this.botName;
+//    this.socket = io().connect(this.ioConnString,{
+//        query:'session_id='+this.getUser()
+//    });
+//
+//    this.socket.on('chat',function(msg){
+//        console.log('chattin');
+//        pushMessage(msg.user,msg.msg);
+//
+//
+//        //$scope.messageHistory.push(msg);
+//        //$scope.apply();
+//    });
+//    this.socket.on('conn',function(usr){
+//        //this.lastMsgUser = '';
+//        console.log('connected user:',usr);
+//        var message = usr + " has joined.";
+//        //var message =  "someone has joined.";
+//        pushMessage(botName,message);
+//    });
+//    this.socket.on('dc',function(usr){
+//        var message = usr+' has left.';
+//        pushMessage(botName,message);
+//    });
+//    this.socket.on('advance',function(){
+//        console.log('advance recieved');
+//        //this.$parent.advanceSong();
+//    });
+//
+//    function pushMessage(usr,msg){
+//        if (this.lastMsgUsr == usr){
+//            var histLen = hist.length;
+//            hist[histLen-1].messages.push(msg);
+//        } else {
+//            this.lastMsgUsr = usr;
+//            hist.push({user:usr,messages:[msg]});
+//        }
+//        console.log(hist);
+//    }
+//};
 
-Chatbox.prototype.connect = function(){
-    var hist = this.history;
-    var botName = this.botName;
-    this.socket = io().connect(this.ioConnString,{
-        query:'session_id='+this.getUser()
-    });
-
-    this.socket.on('chat',function(msg){
-        console.log('chattin');
-        pushMessage(msg.user,msg.msg);
-
-
-        //$scope.messageHistory.push(msg);
-        //$scope.apply();
-    });
-    this.socket.on('conn',function(usr){
-        //this.lastMsgUser = '';
-        console.log('connected user:',usr);
-        var message = usr + " has joined.";
-        //var message =  "someone has joined.";
-        pushMessage(botName,message);
-    });
-    this.socket.on('dc',function(usr){
-        var message = usr+' has left.';
-        pushMessage(botName,message);
-    });
-    this.socket.on('advance',function(){
-        console.log('advance recieved');
-        //this.$parent.advanceSong();
-    });
-
-    function pushMessage(usr,msg){
-        if (this.lastMsgUsr == usr){
-            var histLen = hist.length;
-            hist[histLen-1].messages.push(msg);
-        } else {
-            this.lastMsgUsr = usr;
-            hist.push({user:usr,messages:[msg]});
-        }
-        console.log(hist);
-    }
-};
 Chatbox.prototype.sendChat = function(){
     //console.log('sending message: ',this.chatMsg);
     if (!this.socket.connected) this.connect();

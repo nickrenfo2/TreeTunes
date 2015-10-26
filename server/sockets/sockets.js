@@ -8,7 +8,7 @@ module.exports = function(io) {
         io.emit('conn',socket.request.user.username);
 
         socket.on('chat', function (msg) {
-            console.log('message:',msg);
+            //console.log('message:',msg);
             io.emit('chat',{user:socket.request.user.username,msg:msg});
         });
 

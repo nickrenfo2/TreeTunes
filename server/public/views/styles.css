@@ -118,11 +118,13 @@ form label {
 }
 
 .SCResults {
-    height:100%;
     overflow:scroll;
     transition: all ease-in .5s;
     border:1px solid green;
     opacity: 0;
+    position: absolute;
+    top:85px;
+    width:100%;
 }
 
 .SCResults.expanded {
@@ -304,9 +306,91 @@ form label {
 }
 
 .songQueue .song {
-    border-bottom:1px solid #156711;
+    border-bottom:1px solid #166711;
 }
 
 .songTitle {
     font-size:10px;
+}
+
+
+.management {
+    overflow:hidden;
+    transition: all ease-in .5s;
+    border:1px solid green;
+    opacity: 0;
+    background-color:#166711;
+    width: 100%;
+    margin:0;
+    position:absolute;
+    top: 85px;
+}
+
+.management.expanded {
+    opacity: 1;
+}
+
+.usergrp {
+    border-right:1px solid #fff;
+    float:right;
+    width:25%;
+    height:100%;
+    overflow: scroll;
+}
+
+.rolename {
+
+    background-color:#034500;
+    color:white;
+    border-bottom:1px dashed white;
+    font-size: 24px;
+}
+
+.user {
+    width:100%;
+    height:35px;
+}
+
+.user > div {
+    /*float:left;*/
+    /*width:300px;*/
+    font-size:18px;
+    line-height:30px;
+}
+
+.user form {
+    float:left;
+    opacity:0;
+    /*transition:all 1s ease-in;*/
+    position:absolute;
+    background-color:#034500;
+    font-size:20px;
+}
+
+/*.user form option:hover {*/
+    /*background-color:#166711;*/
+/*}*/
+
+.user form.expanded {
+    opacity: 1;
+}
+
+.user i {
+    float:left;
+    color:white;
+    margin:3px 5px 2px 5px;
+    font-size:25px;
+}
+
+.user:nth-child(odd){
+    background-color: #5AAC56;
+}
+
+
+.devBtns {
+    opacity:0;
+    transition: all .5s linear;
+}
+.devBtns.expanded {
+    opacity: 1;
 }
