@@ -39,6 +39,7 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     var socket;
     var ioConnString = 'http://localhost:5000';
     var lastMsgUser = '';
+    var defTrack = {id:146823529,title:"No song queued",duration:1};
 
 
     var gPlayer;
@@ -161,16 +162,15 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         if (!time)time = 0;
         //SC.get('/tracks/'+id).then(function (track) {
         //console.log(track);
-        console.log('playsound:',track.id);
-        console.log('current time:',time);
+        //console.log('playsound:',track.id);
+        //console.log('current time:',time);
         $scope.songProgressStyle = {transition:"all linear 1s",width:"10px"};
         SC.stream('/tracks/' + track.id).then(function (player) {
             $scope.curSong = track;
-            console.log($scope.curSong);
+            //console.log($scope.curSong);
             $scope.history.push(track);
             clearInterval(songProgressInterval);
             gPlayer = player;
-            console.log(gPlayer);
             gPlayer.seek(time);
             gPlayer.play();
             setTimeout(function(){
@@ -207,13 +207,13 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     };
 
     function advanceSong(){
-        console.log('advancing');
         $http.get('/queue/next').then(function (resp){
-            console.log(resp.data);
             SC.get('/tracks/'+resp.data.id).then(function(track){
+                if (resp.data = 'No song queued') track = defTrack;
                 $scope.playSound(track,resp.data.curTime);
             });
         });
+        $scope.getQueue();
     }
 
     $scope.advanceSong = function(){
@@ -221,9 +221,8 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     };
 
     function checkSong(){
-        console.log('checking song');
         $http.get('/queue/next').then(function(resp){
-            if (resp.data.id != $scope.curSong.id){
+            if (resp.data.id != $scope.curSong.id && $scope.curSong.id != defTrack.id){
                 advanceSong();
             }
         });

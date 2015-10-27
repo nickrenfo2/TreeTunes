@@ -1,5 +1,6 @@
 a {
-    color:#034500;
+    color:#ffffff;
+    text-decoration: underline;
 }
 
 
@@ -272,6 +273,7 @@ form label {
     height:75px;
     border-bottom:1px solid #5AAC56;
     margin-bottom:10px;
+    font-size:10px;
 }
 
 .SCResult {

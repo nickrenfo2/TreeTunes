@@ -21,7 +21,7 @@
 <body ng-controller="IndexController">
     <div class="container-fluid row mainWrapper">
         <div class="col-sm-2 leftMenu">
-            <div class="logo">{{itworks}}</div>
+            <div class="logo">Welcome to TreeTunes closed beta! For feeback reports, contact <a href="https://www.reddit.com/message/compose/?to=nickrenfo2" target="_blank">u/nickrenfo2</a>.</div>
             <div ng-cloak class="leftMenuBtn clickable" ng-click="logout()" ng-show="loggedIn"><i class="fa fa-sign-out"></i>Log Out</div>
             <div class="leftBtns">
                 <div ng-cloak ng-repeat="btn in menuBtns |filter: {area:'left'} track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>

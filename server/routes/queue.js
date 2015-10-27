@@ -52,7 +52,7 @@ router.get('/next', function (req,res) {
             };
             res.json(mySong);
         } else {
-            res.send('no song queued');
+            res.send('No song queued');
         }
     });
 });
@@ -60,7 +60,7 @@ router.get('/next', function (req,res) {
 router.get('/skip', function (req,res) {
     if(req.user.role == 'host' || req.user.role == 'admin') {
         clearInterval(advanceInterval);
-        advance();
+        advance(true);
         return res.sendStatus(200);
     } else {
         return res.sendStatus(401);
@@ -69,7 +69,7 @@ router.get('/skip', function (req,res) {
 
 router.get('/kickoff', function (req,res) {
     //socket = io.connect('http://localhost:5000');
-    advance();
+    advance(false);
     setInterval(function(){
         curTime+=delay;
         //console.log(curTime);
@@ -88,20 +88,20 @@ router.post('/add', function (req,res) {
     res.sendStatus(200);
 });
 
-function advance(){
+function advance(skip){
     //console.log('advancing song');
     var duration = 5000;
     curTime = 0;
     Song.findOne({}, function (err,rmSong) {
         //console.log(rmSong);
         if(rmSong) {
-            rmSong.remove();
+            if(skip) rmSong.remove();
             Song.findOne({}, function (err, song) {
                 if (song) {
                     duration = song.duration;
                     console.log(duration);
                     //socket.emit('advance');
-                    advanceInterval = setTimeout(advance, duration + 5000);
+                    advanceInterval = setTimeout(advance, duration + 5000,true);
                 }
             });
         }
@@ -116,7 +116,7 @@ function changeTrack(duration) {
 
 
 //Start up the server immediately
-advance();
+advance(false);
 setInterval(function(){
     curTime+=delay;
     //console.log(curTime);
