@@ -60,8 +60,8 @@ btn.area = 'top';
 
 
 //switch between local and remote DB
-var connString = 'mongodb://localhost/treeTunes';
-//var connString = 'mongodb://testAdmin:PoopyPants@ds039504.mongolab.com:39504/treetunes';
+//var connString = 'mongodb://localhost/treeTunes';
+var connString = 'mongodb://testAdmin:PoopyPants@ds039504.mongolab.com:39504/treetunes';
 mongoose.connect(connString);
 
 
