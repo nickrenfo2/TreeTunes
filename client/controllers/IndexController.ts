@@ -229,6 +229,11 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         });
     }
 
+    $scope.skip = function(){
+        console.log('skippin');
+        $http.get('/queue/skip');
+    };
+
     $scope.start = function(){};
     //$scope.searchSong($scope.newSong);
 

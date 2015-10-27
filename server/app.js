@@ -32,11 +32,11 @@ app.use(express.static(path.join(__dirname,"/public")));
 
 
 var btn = new MenuBtn();
-btn.action = '$scope.mgmtOpen = !$scope.mgmtOpen';
-btn.icon = 'gears';
-btn.title = 'Management';
+btn.action = '$scope.skip';
+btn.icon = 'forward';
+btn.title = 'Skip';
 btn.role = ['host','admin'];
-btn.area = 'left';
+btn.area = 'top';
 //var btn2 = new MenuBtn();
 //btn2.action = 'alert("Button2")';
 //btn2.icon = 'certificate';
@@ -60,8 +60,8 @@ btn.area = 'left';
 
 
 //switch between local and remote DB
-//var connString = 'mongodb://localhost/treeTunes';
-var connString = 'mongodb://testAdmin:PoopyPants@ds039504.mongolab.com:39504/treetunes';
+var connString = 'mongodb://localhost/treeTunes';
+//var connString = 'mongodb://testAdmin:PoopyPants@ds039504.mongolab.com:39504/treetunes';
 mongoose.connect(connString);
 
 

@@ -22,6 +22,14 @@ a {
     padding:5px;
 }
 
+.leftBtns {
+    border-bottom:1px solid #5AAC56;
+}
+
+.songQueue {
+    overflow: scroll;
+}
+
 .clickable {
     cursor: pointer;
 }

@@ -26,6 +26,8 @@ var curTime = 0;
 var delay = 1000;
 //var socket;
 
+var advanceInterval;
+
 
 router.get('/', function (req,res) {
     //song.save();
@@ -53,6 +55,16 @@ router.get('/next', function (req,res) {
             res.send('no song queued');
         }
     });
+});
+
+router.get('/skip', function (req,res) {
+    if(req.user.role == 'host' || req.user.role == 'admin') {
+        clearInterval(advanceInterval);
+        advance();
+        return res.sendStatus(200);
+    } else {
+        return res.sendStatus(401);
+    }
 });
 
 router.get('/kickoff', function (req,res) {
@@ -89,7 +101,7 @@ function advance(){
                     duration = song.duration;
                     console.log(duration);
                     //socket.emit('advance');
-                    setTimeout(advance, duration + 5000);
+                    advanceInterval = setTimeout(advance, duration + 5000);
                 }
             });
         }

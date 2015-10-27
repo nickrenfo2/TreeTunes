@@ -23,7 +23,9 @@
         <div class="col-sm-2 leftMenu">
             <div class="logo">{{itworks}}</div>
             <div ng-cloak class="leftMenuBtn clickable" ng-click="logout()" ng-show="loggedIn"><i class="fa fa-sign-out"></i>Log Out</div>
-            <div ng-cloak ng-repeat="btn in menuBtns |filter: {area:'left'} track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>
+            <div class="leftBtns">
+                <div ng-cloak ng-repeat="btn in menuBtns |filter: {area:'left'} track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>
+            </div>
             <div class="songQueue">
                 <div class="song" ng-repeat="song in songQueue track by $index">
                     <span class="songTitle">{{song.title}}</span>
