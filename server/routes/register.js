@@ -22,7 +22,7 @@ router.post('/', function(req,res,next) {
     var special = /[!@#$%^(){}[\]~\-_:]+/.test(pass);
 
     if (upper && lower && num && special)
-    req.body.role = 'listener';
+    req.body.role = 'host';
     Users.create(req.body, function (err, post) {
         if (err)
             next(err);
