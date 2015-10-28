@@ -30,7 +30,7 @@ $(function() {
         $('.SCResults').height($('.contentWrapper').height()-85);
         $('.management').height($('.contentWrapper').height()-85);
         $('.usergrp').height($('.management').height());
-        $('.songQueue').height($('.leftMenu').height()-$('.leftBtns').height()-10);
+        $('.songQueue').height($('.leftMenu').height()-$('.leftBtns').height()-$('.logo').height()-35);
     }
 });
 //console.log('running SC');

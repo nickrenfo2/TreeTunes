@@ -8,6 +8,7 @@
     <script src="vendor/angular-animate/angular-animate.min.js"></script>
     <script src="vendor/angular-cookies/angular-cookies.min.js"></script>
     <script src="vendor/angularjs-scroll-glue/src/scrollglue.js"></script>
+    <script src="vendor/angularjs-slider/dist/rzslider.min.js"></script>
     <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/vendor/socket.io-client/socket.io.js"></script>
     <script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
@@ -15,13 +16,17 @@
     <script src="vendor/soundcloud/api.js"></script>
     <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="vendor/angularjs-slider/dist/rzslider.min.css">
     <link rel="stylesheet" href="views/styles.css">
     <base href="/">
 </head>
 <body ng-controller="IndexController">
     <div class="container-fluid row mainWrapper">
         <div class="col-sm-2 leftMenu">
-            <div class="logo">Welcome to TreeTunes closed beta! For feeback reports, contact <a href="https://www.reddit.com/message/compose/?to=nickrenfo2" target="_blank">u/nickrenfo2</a>.</div>
+            <div class="logo">
+                Welcome to TreeTunes closed beta! For feeback reports, contact <a href="https://www.reddit.com/message/compose/?to=nickrenfo2" target="_blank">u/nickrenfo2</a>.<br/>
+                For a list of known issues, check <a href="https://docs.google.com/document/d/1cIJcpFAkSiLIW7Xp30nzWtoHaRl_ZjTZs1xrhEXfwxc/edit?usp=sharing" target="_blank">here</a>.
+            </div>
             <div ng-cloak class="leftMenuBtn clickable" ng-click="logout()" ng-show="loggedIn"><i class="fa fa-sign-out"></i>Log Out</div>
             <div class="leftBtns">
                 <div ng-cloak ng-repeat="btn in menuBtns |filter: {area:'left'} track by $index" class="leftMenuBtn clickable" ng-click="btn.action()"><i class="fa fa-{{btn.icon}}"></i>{{btn.title}}</div>
@@ -39,7 +44,22 @@
                 <div>
                     <div class="player-wrapper">
                         <div ng-cloak class="player">
+                            <div class="voteBtns">
+                                <div ng-click="vote(true)" class="upvote" ng-class="{selected:upvote}"><i class="fa fa-chevron-up"></i></div>
+                                <div ng-click="vote(false)" class="downvote" ng-class="{selected:downvote}"><i class="fa fa-chevron-down"></i></div>
+                            </div>
+                            <div class="points">
+                                {{points}}
+                            </div>
                             <i ng-repeat="btn in menuBtns |filter: {area:'top'} track by $index" class="fa fa-{{btn.icon}} clickable" ng-click="btn.action()"></i>
+                            <div class='volWrapper'>
+                                <i class="fa fa-volume-up clickable volbtn" ng-click="muted = !muted;setVol()" ng-show="volume >=66 && !muted"></i>
+                                <i class="fa fa-volume-down clickable volbtn" ng-click="muted = !muted;setVol()" ng-show="volume <66 && volume>0 && !muted"></i>
+                                <i class="fa fa-volume-off clickable volbtn" ng-click="muted = !muted;setVol()" ng-show="muted || volume==0"></i>
+                                <div class="volSliderWrapper">
+                                    <rzslider class="volSlider" rz-slider-on-change="setVol()" rz-slider-always-show-bar="true" rz-slider-model="volume" rz-slider-ceil="100"></rzslider>
+                                </div>
+                            </div>
                             <span class="curTitle" ng-cloak>{{curSong.title}}</span><br/>
                             <span class="curCreator" ng-cloak><a href="{{curSong.user.permalink_url}}" target="_blank">{{curSong.user.username}}</a></span>
                             <!--<i class="fa fa-forward clickable" ng-click="console.log('skip')"></i>-->
@@ -57,14 +77,18 @@
                         <div class="btn btn-info" ng-click="advanceSong()">Advance Song</div>
                         <div class="btn btn-info" ng-click="getQueue()">Get Queue</div>
                         <div class="btn btn-info" ng-click="kickoff()">Kick off queue</div>
-                        <div class="btn btn-info" ng-click="start()">Start</div>
                     </div>
 
                     <div class="SCResults" ng-class="{expanded:searchOpen}" ng-show="searchOpen">
                         <div class="SCResult search">
-                            <form ng-submit="searchSound(newSong)"><input type="text" ng-model="newSong" placeholder="Search Soundcloud"></form>
+                            <form>
+                                <input type="text" ng-model="newSong" placeholder="Search Soundcloud">
+                                <button ng-click="searchSound(newSong)" class="btn btn-success">Songs</button>
+                                <button ng-click="searchPlaylists(newSong)" class="btn btn-success">Playlists</button>
+                            </form>
                         </div>
-                        <div class="SCResult" ng-repeat="track in SCResults">
+                        <div class="loading" ng-show="loading" ng-cloak><i class="fa fa-spin fa-refresh"></i></div>
+                        <div class="SCResult" ng-repeat="track in SCTrackResults">
                             <div class="SCResultImg"><img src="{{track.artwork_url}}"></div>
                             <div class="SCResultInfo">
                                 <i class="fa fa-plus clickable" ng-click="queueAdd(track)"></i>
@@ -74,7 +98,31 @@
                             </div>
                             <!--ng-click="playSound(track)"-->
                         </div>
+                        <div class="SCResult" ng-repeat="list in SCPlaylistResults">
+                            <div class="SCResultImg"><img src="{{list.artwork_url}}"></div>
+                            <div class="SCResultInfo">
+                                <span class="resNumTracks">{{list.track_count}}</span>
+                                <i class="fa fa-plus clickable" ng-click="addList(list)"></i>
+                                <span class="resTitle">{{list.title}}</span><br/>
+                                <span class="resCreator"><a href="{{list.user.permalink_url}}" target="_blank">{{list.user.username}}</a></span><br/>
+                                <!--<div class="resTracks">-->
+                                    <!--<div class="track" ng-repeat="track in list.tracks">-->
+                                        <!--<div class="SCResult">-->
+                                            <!--<div class="SCResultImg"><img src="{{track.artwork_url}}"></div>-->
+                                            <!--<div class="SCResultInfo">-->
+                                                <!--<i class="fa fa-plus clickable" ng-click="queueAdd(track)"></i>-->
+                                                <!--<span class="resTitle">{{track.title}}</span><br/>-->
+                                                <!--<span class="resCreator"><a href="{{track.user.permalink_url}}" target="_blank">{{track.user.username}}</a></span><br/>-->
+                                                <!--<span class="resDur">{{formatTime(track.duration)}}</span>-->
+                                            <!--</div>-->
+                                            <!--&lt;!&ndash;ng-click="playSound(track)"&ndash;&gt;-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            </div>
+                        </div>
                     </div>
+
                     <div ng-controller="ManagementController as mgmt" ng-class="{expanded:mgmtOpen}" class="row management" ng-cloak ng-show="mgmtOpen">
                         <div ng-repeat="role in mgmt.roles" class="usergrp {{role}}grp">
                             <div class="rolename">{{role | uppercase}}</div>
@@ -103,7 +151,7 @@
 
             <div class="chatbox" ng-controller="ChatboxController as chatbox">
             <!--<div class="chatbox">-->
-                <div class="btn btn-info connBtn" ng-click="chatbox.connect()" ng-hide="chatbox.socket.connected">Connect</div>
+                <!--<div class="btn btn-info connBtn" ng-click="chatbox.connect()" ng-hide="chatbox.socket.connected">Connect</div>-->
                 <div id="messageContainer" scroll-glue>
                     <ul id="messages">
                         <li ng-repeat="msg in chatbox.history track by $index" class="msg">

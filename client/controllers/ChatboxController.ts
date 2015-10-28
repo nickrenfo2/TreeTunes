@@ -16,7 +16,6 @@ function Chatbox($scope) {
         //return $cookies.get('user');
         return readCookie('user');
     };
-    this.scope = $scope;
     function readCookie(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
@@ -34,7 +33,12 @@ function Chatbox($scope) {
         if (newVal) cb.connect();
     });
 
+    $scope.$watch('voted',function(newVal){
+        if (newVal) cb.socket.emit('vote');
+    });
+
     this.connect = function(){
+        var cb = this;
         var hist = this.history;
         var botName = this.botName;
         this.socket = io().connect(this.ioConnString,{
@@ -43,7 +47,6 @@ function Chatbox($scope) {
         });
 
         this.socket.on('chat',function(msg){
-            console.log('chattin');
             pushMessage(msg.user,msg.msg);
 
 
@@ -64,6 +67,9 @@ function Chatbox($scope) {
         this.socket.on('advance',function(){
             console.log('advance recieved');
             //this.$parent.advanceSong();
+        });
+        this.socket.on('vote',function(){
+            $scope.getVotes();
         });
 
         function pushMessage(usr,msg){

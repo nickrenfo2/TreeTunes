@@ -3,11 +3,18 @@ a {
     text-decoration: underline;
 }
 
+.contentWrapper {
+    background-image:url('/assets/images/qj4P9.jpg');
+    background-position: center ;
+    background-size:cover ;
+    background-repeat:no-repeat;
+}
 
 .leftMenu, .rightSidebar {
     background-color:#034500;
     color:white;
     font-size:16px;
+    overflow: hidden;
     /*border-right:3px solid #5AAC56;*/
 }
 
@@ -28,7 +35,7 @@ a {
 }
 
 .songQueue {
-    overflow: scroll;
+    overflow: auto;
 }
 
 .clickable {
@@ -47,6 +54,103 @@ a {
     margin:14px 7px;
     position: relative;
     /*top: -24px;*/
+}
+
+.player .voteBtns {
+    width:55px;
+    padding: 3px;
+    float:left;
+}
+
+.player .voteBtns div.selected {
+    background-color:#8DCF8A;
+}
+
+.player .voteBtns i {
+    font-size:30px;
+    margin:2px 10px;
+}
+
+.player .voteBtns div {
+    float:left;
+    background: #034500;
+}
+
+.player .voteBtns div:hover {
+    background-color: #5AAC56;
+}
+
+.player .voteBtns div:nth-child(1){
+    border-bottom: 1px solid #8DCF8A;
+}
+
+.points {
+    background-color:#034500;
+    float:left;
+    width:30px;
+    text-align: center;
+    margin:3px;
+    height:69px;
+    font-size:30px;
+    padding-top:12px;
+}
+
+.volSliderWrapper {
+    background: #000;
+    opacity: 0;
+    float:right;
+    margin: 14px 7px;
+    padding: 4px;
+    z-index: 10;
+    border-radius:10px;
+    transition:all .2s ease-in;
+}
+
+/*.volSliderWrapper:hover {*/
+    /*opacity: .7;*/
+/*}*/
+
+.volWrapper:hover .volSliderWrapper {
+    opacity:.7;
+}
+
+.volWrapper {
+    float:right;
+}
+.volSlider {
+    opacity: 1;
+    float:right;
+    width:100px;
+    margin: 14px 7px;
+}
+
+.volbtn {
+    width:34px;
+}
+
+rzslider span.rz-bubble {
+    background-color:#034500;
+    border-radius:10px;
+}
+
+rzslider span.rz-bubble.rz-limit {
+    display:none;
+}
+
+.rz-pointer {
+    background-color:transparent !important;
+}
+
+.rz-pointer.rz-active {
+    background-color:transparent;
+}
+
+rzslider span.rz-pointer::after {
+    left:10px;
+    width:12px;
+    height:12px;
+    top:10px;
+    border-radius:12px;
 }
 
 .player-wrapper {
@@ -140,6 +244,7 @@ form label {
     opacity: 1;
     /*height:500px;*/
     /*height:100%;*/
+    overflow:auto;
 }
 
 .SCResult:nth-child(even){
@@ -159,8 +264,15 @@ form label {
     border-radius: 5px;
     border:1px solid #034500;
     font-size:24px;
-    width:100%;
+    width:75%;
 }
+
+.SCResult.search form button {
+    width:10%;
+    position: relative;
+    top:-5px;
+}
+
 
 .SCResultInfo i {
     float:right;
@@ -173,16 +285,31 @@ form label {
     font-size:24px;
     line-height:24px;
     font-weight: bold;
+    position: absolute;
+    white-space: nowrap;
+    width:100%;
+    overflow:hidden;
 }
 .resDur {
     font-size:14px;
 
 }
 
+.resNumTrack {
+    float:right;
+    font-weight:bold;
+    font-size:18px;
+}
+
 
 .rightSidebar>i {
     font-size: 24px;
     margin:5px;
+}
+
+.loading {
+    font-size:36px;
+    padding-left:50%;
 }
 
 .chatbox {
@@ -211,7 +338,7 @@ form label {
 /*}*/
 
 #messageContainer {
-    overflow: scroll;
+    overflow: auto;
 }
 
 #messages {

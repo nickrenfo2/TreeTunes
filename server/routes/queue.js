@@ -5,6 +5,7 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 var Song = require('../../models/song');
+var Vote = require('../../models/vote');
 //var mongoose = require('mongoose');
 var app = express();
 //var http = require('http').Server(app);
@@ -30,7 +31,6 @@ var advanceInterval;
 
 
 router.get('/', function (req,res) {
-    //song.save();
     Song.find({}, function (err,queue) {
         //console.log(btns);
         res.send(JSON.stringify(queue));
@@ -78,6 +78,8 @@ router.get('/kickoff', function (req,res) {
 });
 
 router.post('/add', function (req,res) {
+    if(req.user.role = 'listener')
+        return sendStatus(401);
     var newSong = new Song();
     newSong.id = req.body.id;
     newSong.duration = req.body.duration;
@@ -86,6 +88,52 @@ router.post('/add', function (req,res) {
     newSong.save();
     //console.log(req.body);
     res.sendStatus(200);
+});
+
+router.post('/vote', function (req,res) {
+    console.log('voting');
+        Song.findOne({}, function (err,song) {
+            if (song) {
+                Vote.findOne({userId:req.user._id,songId:song._id}, function (err,vote) {
+                    if (vote){
+                        console.log('changing vote');
+                        vote.points = req.body.pts;
+                        vote.save();
+                    } else {
+                        console.log('new vote');
+                        var newVote = new Vote();
+                        newVote.username = req.user.username;
+                        newVote.points = req.body.pts;
+                        newVote.userId = req.user._id;
+                        newVote.songId = song._id;
+                        newVote.save();
+                    }
+                    res.send({success:true});
+                });
+            } else {
+                res.send({success:false,message:'no song queued'});
+            }
+    });
+});
+
+router.get('/votes', function (req,res) {
+    console.log('getting votes');
+    Song.findOne({}, function (err,song) {
+        if (song){
+            console.log('searching for votes on song:',song._id);
+            Vote.find({songId:song._id}, function (err,votes) {
+                console.log('found votes',votes);
+                var pts = 0;
+                for (var i= 0;i<votes.length;i++){
+                    if (votes[i].points) pts++;
+                    else pts--;
+                }
+                res.send({success:true,votes:votes.length,points:pts});
+            });
+        } else {
+            res.send({success:false,message:'no song queued'});
+        }
+    });
 });
 
 function advance(skip){
@@ -99,7 +147,6 @@ function advance(skip){
             Song.findOne({}, function (err, song) {
                 if (song) {
                     duration = song.duration;
-                    console.log(duration);
                     //socket.emit('advance');
                     advanceInterval = setTimeout(advance, duration + 5000,true);
                 }

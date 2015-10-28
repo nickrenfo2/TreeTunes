@@ -59,7 +59,9 @@ gulp.task('copy',function() {
         'angular-animate/angular-animate.min.js',
         'socket.io-client/socket.io.js',
         'angular-cookies/angular-cookies.min.js',
-        'angularjs-scroll-glue/src/scrollglue.js'
+        'angularjs-scroll-glue/src/scrollglue.js',
+        'angularjs-slider/dist/rzslider.min.js',
+        'angularjs-slider/dist/rzslider.min.css'
     ],{cwd:'node_modules',base:'node_modules'})
         .pipe(gulp.dest('server/public/vendor'));
 });

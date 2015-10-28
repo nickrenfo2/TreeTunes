@@ -24,5 +24,8 @@ module.exports = function(io) {
             console.log(foo);
             console.log('test');
         });
+        socket.on('vote', function () {
+            io.emit('vote');
+        });
     });
 };

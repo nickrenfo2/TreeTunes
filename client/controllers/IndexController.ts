@@ -27,7 +27,8 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     $scope.songProgress=0;
     var songProgressInterval;
     $scope.Math = Math;
-    $scope.SCResults = [];
+    $scope.SCTrackResults = [];
+    $scope.SCPlaylistResults = [];
     //$scope.messageHistory = [];
     $scope.loggedIn = !!$cookies.get('user');
     if ($scope.loggedIn){
@@ -36,6 +37,13 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         $scope.chatplaceholder = 'Please log in to chat';
     }
     $scope.songQueue = [];
+    $scope.volume = 100;
+    $scope.muted = false;
+    $scope.points = 0;
+    $scope.loading = false;
+    $scope.voted = false;
+    $scope.upvote = false;
+    $scope.downvote = false;
     var socket;
     var ioConnString = 'http://localhost:5000';
     var lastMsgUser = '';
@@ -55,10 +63,28 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
             streamable:true
         }).then(function (tracks) {
             console.log(tracks);
-            $scope.SCResults = tracks;
-            $scope.$apply();
+            $scope.SCPlaylistResults = [];
+            $scope.SCTrackResults = tracks;
+            //$scope.$apply();
         });
 
+    };
+
+    $scope.searchPlaylists = function(qry){
+        $scope.loading = true;
+        SC.get('/playlists/',{
+            streamable:true,
+            q:qry
+        }).then(function(lists){
+            $scope.loading = false;
+            $scope.SCTrackResults = [];
+            $scope.SCPlaylistResults = lists;
+            console.log(lists);
+        },function(resp){
+            console.log(resp);
+            $scope.loading = false;
+            setAlert('Playlists not available. Please try again in a few minutes','danger');
+        })
     };
 
     //MJ - 6521918
@@ -194,6 +220,13 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         $http.post('/queue/add',track);
     };
 
+    $scope.addList = function(list){
+        console.log(list);
+        for (var i=0;i<list.tracks.length;i++){
+            $scope.queueAdd(list.tracks[i]);
+        }
+    };
+
     $scope.getQueue = function(){
         $http.get('/queue').then(function(resp){
             console.log('upcoming queue:');
@@ -207,9 +240,11 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
     };
 
     function advanceSong(){
+        $scope.voted = false;
+        $scope.points = 0;
         $http.get('/queue/next').then(function (resp){
             SC.get('/tracks/'+resp.data.id).then(function(track){
-                if (resp.data = 'No song queued') track = defTrack;
+                if (resp.data == 'No song queued') track = defTrack;
                 $scope.playSound(track,resp.data.curTime);
             });
         });
@@ -228,8 +263,36 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         });
     }
 
+    $scope.vote = function(pts){
+        $scope.voted=false;
+        if (pts) {
+            $scope.upvote = true;
+            $scope.downvote = false;
+        } else {
+            $scope.downvote = true;
+            $scope.upvote = false;
+        }
+
+        $http.post('/queue/vote',{pts:pts}).then(function (resp) {
+            console.log(resp.data);
+            if (resp.data.success) $scope.voted = true;
+        });
+    };
+
+    $scope.getVotes = function(){
+        $http.get('/queue/votes').then(function(resp){
+            console.log(resp.data);
+            if (resp.data.success){
+                $scope.points = resp.data.points;
+            }
+        });
+    };
+
+    function getVotes() {
+        return $scope.getVotes();
+    };
+
     $scope.skip = function(){
-        console.log('skippin');
         $http.get('/queue/skip');
     };
 
@@ -252,8 +315,14 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         }
     };
 
+    $scope.setVol = function(){
+        var vol =0;
+        if(!$scope.muted)
+            vol=$scope.volume;
+        gPlayer.setVolume(vol);
+    };
+
     getMenuBtns();
-    $scope.getQueue();
     setInterval(checkSong,1000);
     advanceSong();
 
