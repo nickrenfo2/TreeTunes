@@ -217,7 +217,9 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
 
     $scope.queueAdd = function(track){
         console.log('adding track:',track);
-        $http.post('/queue/add',track);
+        $http.post('/queue/add',track).then(function (resp) {
+            $scope.getQueue();
+        });
     };
 
     $scope.addList = function(list){
