@@ -79,7 +79,7 @@ router.get('/kickoff', function (req,res) {
 
 router.post('/add', function (req,res) {
     if(req.user.role = 'listener')
-        return sendStatus(401);
+        return res.sendStatus(401);
     var newSong = new Song();
     newSong.id = req.body.id;
     newSong.duration = req.body.duration;
