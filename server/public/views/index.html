@@ -57,7 +57,7 @@
                                 <i class="fa fa-volume-down clickable volbtn" ng-click="muted = !muted;setVol()" ng-show="volume <66 && volume>0 && !muted"></i>
                                 <i class="fa fa-volume-off clickable volbtn" ng-click="muted = !muted;setVol()" ng-show="muted || volume==0"></i>
                                 <div class="volSliderWrapper">
-                                    <rzslider class="volSlider" rz-slider-on-change="setVol()" rz-slider-always-show-bar="true" rz-slider-model="volume" rz-slider-ceil="100"></rzslider>
+                                    <rzslider class="volSlider" rz-slider-on-change="muted = false;setVol()" rz-slider-always-show-bar="true" rz-slider-model="volume" rz-slider-ceil="100"></rzslider>
                                 </div>
                             </div>
                             <span class="curTitle" ng-cloak>{{curSong.title}}</span><br/>

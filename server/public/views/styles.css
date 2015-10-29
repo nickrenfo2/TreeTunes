@@ -30,6 +30,10 @@ a {
     padding:5px;
 }
 
+.leftMenuBtn:active {
+    color:#131313;
+}
+
 .leftBtns {
     border-bottom:1px solid #5AAC56;
 }
@@ -54,6 +58,10 @@ a {
     margin:14px 7px;
     position: relative;
     /*top: -24px;*/
+}
+
+.player i:active {
+    color:#131313;
 }
 
 .player .voteBtns {
@@ -87,7 +95,7 @@ a {
 .points {
     background-color:#034500;
     float:left;
-    width:30px;
+    width:50px;
     text-align: center;
     margin:3px;
     height:69px;
@@ -278,6 +286,10 @@ form label {
     float:right;
     font-size:36px;
     margin-top: 12px;
+}
+
+.SCResultInfo i:active{
+    color:white;
 }
 
 
@@ -530,4 +542,9 @@ form label {
 }
 .devBtns.expanded {
     opacity: 1;
+}
+
+.chatbox .usr {
+    font-style: italic;
+    font-weight: bold;
 }

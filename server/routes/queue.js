@@ -91,16 +91,13 @@ router.post('/add', function (req,res) {
 });
 
 router.post('/vote', function (req,res) {
-    console.log('voting');
         Song.findOne({}, function (err,song) {
             if (song) {
                 Vote.findOne({userId:req.user._id,songId:song._id}, function (err,vote) {
                     if (vote){
-                        console.log('changing vote');
                         vote.points = req.body.pts;
                         vote.save();
                     } else {
-                        console.log('new vote');
                         var newVote = new Vote();
                         newVote.username = req.user.username;
                         newVote.points = req.body.pts;

@@ -280,6 +280,10 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
         $http.post('/queue/vote',{pts:pts}).then(function (resp) {
             console.log(resp.data);
             if (resp.data.success) $scope.voted = true;
+            else {
+                $scope.upvote = false;
+                $scope.downvote = false;
+            }
         });
     };
 
