@@ -241,6 +241,8 @@ app.controller("IndexController", ["$scope", "$http",'$cookies', function ($scop
 
     function advanceSong(){
         $scope.voted = false;
+        $scope.upvote = false;
+        $scope.downvote = false;
         $scope.points = 0;
         $http.get('/queue/next').then(function (resp){
             SC.get('/tracks/'+resp.data.id).then(function(track){
