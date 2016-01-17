@@ -12,7 +12,7 @@ var bodyParser = require('body-parser');
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var sockets = require('sockets')(io);
+var sockets = require('socket.io')(io);
 var passportSocketIo = require('passport.socketio');
 
 var login = require('./routes/loginFn');
